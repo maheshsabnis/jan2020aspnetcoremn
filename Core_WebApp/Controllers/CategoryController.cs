@@ -41,7 +41,7 @@ namespace Core_WebApp.Controllers
             if (ModelState.IsValid)
             {
                 var res = await repository.CreateAsync(category);
-                return View("Index"); // return to the Index View
+                return RedirectToAction("Index"); // return to the Index View
             }
             return View(category); // stey on create view with validation error messages
         }
@@ -59,7 +59,7 @@ namespace Core_WebApp.Controllers
             if (ModelState.IsValid)
             {
                 var res = await repository.UpdateAsync(id,category);
-                return View("Index"); // return to the Index View
+                return RedirectToAction("Index"); // return to the Index View
             }
             return View(category); // stey on edit view with validation error messages
         }
@@ -69,9 +69,9 @@ namespace Core_WebApp.Controllers
             var res = await repository.DeleteAsync(id);
             if (res) // delete successful
             {
-                return View("Index"); // return to the Index View
-            } 
-            return View("Index"); // return to the Index View
+                return RedirectToAction("Index"); // return to the Index View
+            }
+            return RedirectToAction("Index"); // return to the Index View
         }
     }
 }
