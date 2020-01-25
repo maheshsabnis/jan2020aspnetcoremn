@@ -46,8 +46,9 @@ namespace Core_WebApp
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-
+            // services.AddControllers(); // WEB API
+            services.AddControllersWithViews(); // MVC Request and WEB API Request Processing
+            
             // register the DbContext in DI Container
             services.AddDbContext<AppDbContext>(options =>
             {
@@ -56,7 +57,7 @@ namespace Core_WebApp
 
             // register repository services in the DI Container
             services.AddScoped<IRepository<Category,int>,CategoryRepository>();
-            services.AddScoped<IRepository<Product, int>, ProductRepository>();
+            services.AddScoped<IRepository<Product, int>,ProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,22 +69,31 @@ namespace Core_WebApp
         /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // detect the env. 
             if (env.IsDevelopment())
             {
+                // Standard Framework error Page
                 app.UseDeveloperExceptionPage();
             }
             else
             {
+                // standard excpetion Handler
                 app.UseExceptionHandler("/Home/Error");
             }
+            // by default uses the wwwroot to read static files 
+            // e.g. .js/.css/.img or anu other custom static files
+            // to render in Http Response
             app.UseStaticFiles();
 
+            // routing for API and MVC based on EndPoints
             app.UseRouting();
-
+            // used for USerName/PWD and JWT
             app.UseAuthorization();
-
+            // exposes Endpoint ffrom Server to accept Http Request 
+            // process it using Routing and generate response 
             app.UseEndpoints(endpoints =>
             {
+                // MVC
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
