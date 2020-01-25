@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Core_WebApp.Services;
 
 namespace Core_WebApp
 {
@@ -52,6 +53,10 @@ namespace Core_WebApp
             {
                 options.UseSqlServer(Configuration.GetConnectionString("AppDbConnection"));
             });
+
+            // register repository services in the DI Container
+            services.AddScoped<IRepository<Category,int>,CategoryRepository>();
+            services.AddScoped<IRepository<Product, int>, ProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

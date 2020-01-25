@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 namespace Core_WebApp.Models
 {
-    public class Category
+   
+    public class Category  
     {
         [Key] // primary identity Key
         public int CategoryRowId { get; set; }
