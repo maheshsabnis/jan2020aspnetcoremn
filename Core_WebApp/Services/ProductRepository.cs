@@ -53,7 +53,8 @@ namespace Core_WebApp.Services
 				res.ProductName = entity.ProductName;
 				res.Manufacturer = entity.Manufacturer;
 				res.Description = entity.Description;
-				res.CategoryRowId = entity.CategoryRowId;
+				res.Price = entity.Price;
+				 res.CategoryRowId = entity.CategoryRowId;
 				await ctx.SaveChangesAsync();
 				return res;
 			}

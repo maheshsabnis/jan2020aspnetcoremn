@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Core_WebApp.Models
 {
    
@@ -16,7 +18,6 @@ namespace Core_WebApp.Models
         public string CategoryName { get; set; }
         [Required(ErrorMessage = "Base Price Must")]
         public int BasePrice { get; set; }
-        // One-to-Many Relationship
         public ICollection<Product> Products { get; set; }
     }
 
@@ -32,9 +33,24 @@ namespace Core_WebApp.Models
         public string Manufacturer { get; set; }
         [Required(ErrorMessage = "Description Must")]
         public string Description { get; set; }
-        [Required(ErrorMessage = "Category Row Id Must")]
+        [Required(ErrorMessage ="Price us Must")]
+        [NumericNonNegative(ErrorMessage ="Price Cannot be -ve")]
+        public int Price { get; set; }
+        [ForeignKey("CategoryRowId")]
         public int CategoryRowId { get; set; }
-        // foreign key
-        public Category Category { get; set; }
+       public Category Category { get; set; }
+    }
+
+
+    public class NumericNonNegativeAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            if (Convert.ToInt32(value) < 0)
+            {
+                return false; // invalid
+            } 
+            return true; //valid
+        }
     }
 }
