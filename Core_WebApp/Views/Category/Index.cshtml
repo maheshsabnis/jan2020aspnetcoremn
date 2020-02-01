@@ -50,7 +50,8 @@
             <td>
                 <!--Html.ActionLink generate <a> tag-->
                 @Html.ActionLink("Edit", "Edit", new {  id=item.CategoryRowId }) |
-                @Html.ActionLink("Delete", "Delete", new {id=item.CategoryRowId })
+                @Html.ActionLink("Delete", "Delete", new {id=item.CategoryRowId })|
+                @Html.ActionLink("ShowProducts","ShowProducts", new {id=item.CategoryRowId })
             </td>
         </tr>
 }

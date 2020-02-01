@@ -28,12 +28,26 @@ namespace Core_WebApp.Controllers
         }
         public async  Task<IActionResult> Index()
         {
-            var res = await repository.GetAsync();
-            return View(res); // return the Index View
+            List<Product> products = new List<Product>();
+            // read data from TempData
+            int CatRowId = Convert.ToInt32(TempData["CategoryRowId"]);
+            if (CatRowId != 0)
+            {
+                products = (from p in await repository.GetAsync()
+                            where p.CategoryRowId == CatRowId
+                            select p).ToList();
+            }
+            else
+            {
+                products =  repository.GetAsync().Result.ToList();
+            }
+            TempData.Keep();
+            return View(products); // return the Index View
         }
 
         public async Task<IActionResult> Create()
         {
+            var r = TempData["CategoryRowId"];
             // define a ViewBag that will pass the Category List to Create View
             // so that it will be rendered in DropDown aka <select>
             // use the 'SelectList' class that will carry the data
@@ -53,19 +67,34 @@ namespace Core_WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Product Product)
         {
-            // check for the validation
-            if (ModelState.IsValid)
-            {
-                var res = await repository.CreateAsync(Product);
-                return RedirectToAction("Index"); // return to the Index View
-            }
-            else
-            {
-                ViewBag.CategoryRowId = new SelectList(await catRepository.GetAsync(),
-              "CategoryRowId", "CategoryName");
-                return View(Product); // stey on create view with validation error messages
-
-            }
+            //try
+            //{
+                // check for the validation
+                if (ModelState.IsValid)
+                {
+                    if (Product.Price < 0) 
+                    {
+                        throw new Exception("Product Price Cannot be -ve");
+                    }
+                    var res = await repository.CreateAsync(Product);
+                    return RedirectToAction("Index"); // return to the Index View
+                }
+                else
+                {
+                    ViewBag.CategoryRowId = new SelectList(await catRepository.GetAsync(),
+                  "CategoryRowId", "CategoryName");
+                    return View(Product); // stey on create view with validation error messages
+                }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return View("Error", new ErrorViewModel()
+            //    {
+            //        ControllerName = this.RouteData.Values["controller"].ToString(),
+            //        ActionName = this.RouteData.Values["action"].ToString(),
+            //        ErrorMessage = ex.Message
+            //    });
+            //}
         }
 
         public async Task<IActionResult> Edit(int id)

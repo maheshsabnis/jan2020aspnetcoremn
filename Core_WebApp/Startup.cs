@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Core_WebApp.Services;
+using Core_WebApp.CustomFilters;
 
 namespace Core_WebApp
 {
@@ -47,7 +48,10 @@ namespace Core_WebApp
         public void ConfigureServices(IServiceCollection services)
         {
             // services.AddControllers(); // WEB API
-            services.AddControllersWithViews(); // MVC Request and WEB API Request Processing
+            // register the filter
+            services.AddControllersWithViews(
+                  options => options.Filters.Add(typeof(MyExceptionFilter))
+                );  // MVC Request and WEB API Request Processing
             
             // register the DbContext in DI Container
             services.AddDbContext<AppDbContext>(options =>
