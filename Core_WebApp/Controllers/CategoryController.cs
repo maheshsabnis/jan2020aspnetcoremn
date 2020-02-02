@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Core_WebApp.Models;
 using Core_WebApp.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Core_WebApp.Controllers
 {
@@ -16,6 +17,8 @@ namespace Core_WebApp.Controllers
     /// All Action method of Controller class are HttpGet By Default 
     /// 
     /// </summary>
+    /// 
+    
     public class CategoryController : Controller
     {
         private readonly IRepository<Category, int> repository;
@@ -23,12 +26,14 @@ namespace Core_WebApp.Controllers
         {
             this.repository = repository;
         }
+        [Authorize(Policy ="ReadPolicy")]
         public async  Task<IActionResult> Index()
         {
             var res = await repository.GetAsync();
             return View(res); // return the Index View
         }
 
+        [Authorize(Policy = "WritePolicy")]
         public IActionResult Create()
         {
             return View(new Category()); // return the create view
@@ -78,6 +83,7 @@ namespace Core_WebApp.Controllers
         public IActionResult ShowProducts(int id)
         {
             TempData["CategoryRowId"] = id;
+            
             return RedirectToAction("Index","Product"); // return to the Index View from ProductController
         }
 

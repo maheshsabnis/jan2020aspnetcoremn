@@ -1,5 +1,7 @@
 ﻿using Core_WebApp.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -13,16 +15,20 @@ namespace Core_WebApp.CustomFilters
 	public class MyExceptionFilter: ExceptionFilterAttribute
 	{
 		private readonly IModelMetadataProvider metadataProvider;
-		private readonly AppDbContext ctx;
+		private readonly ITempDataDictionaryFactory tempDataDictionaryFactory;
+		private readonly IHostingEnvironment hostingEnvironment;
 		/// <summary>
 		/// The IModelMetadataProvider will provide metadata of any dynamic
 		/// models used in the current HttpRequest
 		/// </summary>
 		/// <param name="metadataProvider"></param>
-		public MyExceptionFilter(IModelMetadataProvider metadataProvider, AppDbContext ctx)
+		public MyExceptionFilter(IModelMetadataProvider metadataProvider, 
+			ITempDataDictionaryFactory tempDataDictionaryFactory,
+			IHostingEnvironment hostingEnvironment)
 		{
 			this.metadataProvider = metadataProvider;
-			this.ctx = ctx;
+			this.tempDataDictionaryFactory = tempDataDictionaryFactory;
+			this.hostingEnvironment = hostingEnvironment;
 		}
 
 		/// <summary>
@@ -31,6 +37,7 @@ namespace Core_WebApp.CustomFilters
 		/// <param name="context"></param>
 		public override void OnException(ExceptionContext context)
 		{
+			var tempData = tempDataDictionaryFactory.GetTempData(context.HttpContext);
 			// read exception message
 			string message = context.Exception.Message;
 			// handle Exception
@@ -42,10 +49,12 @@ namespace Core_WebApp.CustomFilters
 			ViewData["controller"] = context.RouteData.Values["controller"].ToString();
 			ViewData["action"] = context.RouteData.Values["action"].ToString();
 			ViewData["errormessage"] = message;
+			result.TempData = tempData;
 			// ViewName
 			result.ViewName = "CustomError";
 			// ViewData
 			result.ViewData = ViewData;
+		//	result.TempData.Keep();
 			// setting result in HttpResponse
 			context.Result = result;
 			

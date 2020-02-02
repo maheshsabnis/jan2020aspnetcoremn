@@ -47,7 +47,11 @@ namespace Core_WebApp.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var r = TempData["CategoryRowId"];
+            if (TempData.Values.Count > 0)
+            {
+                var prd = TempData["Prd"];
+                return View((Product)prd);
+            }
             // define a ViewBag that will pass the Category List to Create View
             // so that it will be rendered in DropDown aka <select>
             // use the 'SelectList' class that will carry the data
@@ -74,6 +78,7 @@ namespace Core_WebApp.Controllers
                 {
                     if (Product.Price < 0) 
                     {
+                         TempData["Prd"] = Product;
                         throw new Exception("Product Price Cannot be -ve");
                     }
                     var res = await repository.CreateAsync(Product);

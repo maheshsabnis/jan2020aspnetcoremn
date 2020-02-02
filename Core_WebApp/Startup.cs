@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Core_WebApp.Services;
 using Core_WebApp.CustomFilters;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Core_WebApp.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace Core_WebApp
 {
@@ -47,6 +50,9 @@ namespace Core_WebApp
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+            services.AddSession();
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             // services.AddControllers(); // WEB API
             // register the filter
             services.AddControllersWithViews(
@@ -59,9 +65,38 @@ namespace Core_WebApp
                 options.UseSqlServer(Configuration.GetConnectionString("AppDbConnection"));
             });
 
+            // security classes
+            services.AddDbContext<AuthDbContext>(options =>
+                  options.UseSqlServer(
+                      Configuration.GetConnectionString("AuthDbContextConnection")));
+            // resolve UserManager<IdentityUser>, SignInManager<IdentityUser>
+            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddDefaultUI()
+            //    .AddEntityFrameworkStores<AuthDbContext>();
+
+            services.AddIdentity<IdentityUser,IdentityRole>()
+              .AddDefaultUI()
+              .AddEntityFrameworkStores<AuthDbContext>();
+            // Ends here
+
+
+            // adding policies
+            services.AddAuthorization(options => {
+                options.AddPolicy("ReadPolicy", policy =>
+                {
+                    policy.RequireRole("Clerk","Admin", "Manager");
+                });
+                options.AddPolicy("WritePolicy", policy =>
+                {
+                    policy.RequireRole("Admin", "Manager");
+                });
+            });
+
             // register repository services in the DI Container
             services.AddScoped<IRepository<Category,int>,CategoryRepository>();
             services.AddScoped<IRepository<Product, int>,ProductRepository>();
+             services.AddMvc(); // security for Controllers
+          //  services.AddDistributedMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,6 +108,10 @@ namespace Core_WebApp
         /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // routing for API and MVC based on EndPoints
+            app.UseRouting(); // use it ar first place for Identity
+            app.UseSession();
+
             // detect the env. 
             if (env.IsDevelopment())
             {
@@ -88,9 +127,8 @@ namespace Core_WebApp
             // e.g. .js/.css/.img or anu other custom static files
             // to render in Http Response
             app.UseStaticFiles();
-
-            // routing for API and MVC based on EndPoints
-            app.UseRouting();
+            app.UseAuthentication();
+         
             // used for USerName/PWD and JWT
             app.UseAuthorization();
             // exposes Endpoint ffrom Server to accept Http Request 
@@ -101,6 +139,7 @@ namespace Core_WebApp
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

@@ -39,7 +39,7 @@ namespace Core_WebApp.Models
         [ForeignKey("CategoryRowId")]
         public int CategoryRowId { get; set; }
        public Category Category { get; set; }
-    }
+    }   
 
 
     public class NumericNonNegativeAttribute : ValidationAttribute
