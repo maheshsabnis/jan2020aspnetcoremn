@@ -53,7 +53,7 @@ namespace Core_WebApp
             services.AddMemoryCache();
             services.AddSession();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-            // services.AddControllers(); // WEB API
+            services.AddControllers(); // WEB API
             // register the filter
             services.AddControllersWithViews(
                   options => options.Filters.Add(typeof(MyExceptionFilter))
@@ -135,7 +135,7 @@ namespace Core_WebApp
             // process it using Routing and generate response 
             app.UseEndpoints(endpoints =>
             {
-                // MVC
+                // MVC + WEB API Controllers
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

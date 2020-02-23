@@ -3,8 +3,8 @@
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 @{ 
 
-	 var data = TempData["Prd"];
-    TempData.Keep();
+	// var data = TempData["Prd"];
+      
 } 
 <div class="container">
     <h2>
@@ -18,6 +18,10 @@
         Error message is @ViewData["message"]
     </h2>
 </div> 
-
+<div>
+    @{ 
+        
+    }
+</div> 
 <br />
 <a asp-action="@ViewData["action"]" asp-controller="@ViewData["controller"]">Go Back</a>  

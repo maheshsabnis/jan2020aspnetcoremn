@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Core_WebApp.Models;
 using Core_WebApp.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
+using Core_WebApp.Providers;
 namespace Core_WebApp.Controllers
 {
     /// <summary>
@@ -49,8 +49,8 @@ namespace Core_WebApp.Controllers
         {
             if (TempData.Values.Count > 0)
             {
-                var prd = TempData["Prd"];
-                return View((Product)prd);
+                var prd = TempData.Get<Product>("Prd");
+                return View(prd);
             }
             // define a ViewBag that will pass the Category List to Create View
             // so that it will be rendered in DropDown aka <select>
@@ -78,7 +78,8 @@ namespace Core_WebApp.Controllers
                 {
                     if (Product.Price < 0) 
                     {
-                         TempData["Prd"] = Product;
+                       //  TempData["Prd"] = Product;
+                       TempData.Put<Product>("Prd", Product);
                         throw new Exception("Product Price Cannot be -ve");
                     }
                     var res = await repository.CreateAsync(Product);
