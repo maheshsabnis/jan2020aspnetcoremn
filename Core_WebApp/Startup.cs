@@ -14,6 +14,7 @@ using Core_WebApp.CustomFilters;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Core_WebApp.Data;
 using Microsoft.AspNetCore.Identity;
+using Core_WebApp.CustomMiddleware;
 
 namespace Core_WebApp
 {
@@ -56,7 +57,7 @@ namespace Core_WebApp
             services.AddControllers(); // WEB API
             // register the filter
             services.AddControllersWithViews(
-                  options => options.Filters.Add(typeof(MyExceptionFilter))
+                 // options => options.Filters.Add(typeof(MyExceptionFilter))
                 );  // MVC Request and WEB API Request Processing
             
             // register the DbContext in DI Container
@@ -128,7 +129,10 @@ namespace Core_WebApp
             // to render in Http Response
             app.UseStaticFiles();
             app.UseAuthentication();
-         
+
+            // register the custom mexception middleware
+            app.UseCustomErrorMiddleware();
+
             // used for USerName/PWD and JWT
             app.UseAuthorization();
             // exposes Endpoint ffrom Server to accept Http Request 
@@ -143,4 +147,6 @@ namespace Core_WebApp
             });
         }
     }
+
+   
 }

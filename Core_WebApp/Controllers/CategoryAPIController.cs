@@ -45,6 +45,7 @@ namespace Core_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (cat.BasePrice < 0) throw new Exception("Base Price Cannot be -ve");
                 cat = await _catRepository.CreateAsync(cat);
                 return Ok(cat);
             }
