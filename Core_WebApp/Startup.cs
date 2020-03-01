@@ -65,7 +65,13 @@ namespace Core_WebApp
             {
                 options.UseSqlServer(Configuration.GetConnectionString("AppDbConnection"));
             });
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy("corspolicy", policy =>
+                {
+                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+            });
             // security classes
             services.AddDbContext<AuthDbContext>(options =>
                   options.UseSqlServer(
@@ -129,7 +135,8 @@ namespace Core_WebApp
             // to render in Http Response
             app.UseStaticFiles();
             app.UseAuthentication();
-
+            // add the cors middleware
+            app.UseCors("corspolicy");
             // register the custom mexception middleware
             app.UseCustomErrorMiddleware();
 
